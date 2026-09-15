@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}{{ software_name }} · Crew{% endblock %}
+{% block head %}<link rel="stylesheet" href="{{ url_for('static', filename='css/operator.css') }}">{% endblock %}
+{% block body_class %}page-operator{% endblock %}
+
+{% block body %}
+<main class="page">
+  <header class="titlebar"><span>CREW PANEL</span><span>{{ software_name }}</span></header>
+
+  <div class="status" id="status" data-state="offline">
+    <span class="status__dot"></span><span id="status-text">CONNECTING...</span>
+  </div>
+  <p class="job-line dim" id="job-line">LAST JOB: NONE</p>
+
+  <section class="panel">
+    <h2 class="panel__title">CONTROLS</h2>
+    <div class="mode" role="radiogroup" aria-label="Trigger mode">
+      <button type="button" class="mode__option" role="radio" data-mode="auto">AUTO</button>
+      <button type="button" class="mode__option" role="radio" data-mode="cue">CUE</button>
+    </div>
+    <p class="hint dim" id="mode-hint"></p>
+    <div class="btn-row controls">
+      <button type="button" class="btn btn--block" data-action="start" id="btn-start">START</button>
+      <button type="button" class="btn btn--cyan btn--block" data-action="replay" id="btn-replay">REPLAY LAST</button>
+      <button type="button" class="btn btn--danger btn--block" data-action="reset" id="btn-reset">RESET</button>
+    </div>
+    <p class="message" id="message" role="status" aria-live="polite"></p>
+  </section>
+
+  <section class="panel">
+    <h2 class="panel__title">TIMING</h2>
+    <div class="field">
+      <label class="field__label" for="speed">SPEED <span class="amber" id="speed-value"></span></label>
+      <input type="range" id="speed" min="0.5" max="2" step="0.1">
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label for="phase-receive">RECEIVE (S)</label>
+        <input type="number" id="phase-receive" data-phase="receive" min="0" max="120" step="0.5" inputmode="decimal">
+      </div>
+      <div class="field">
+        <label for="phase-compose">COMPOSE (S)</label>
+        <input type="number" id="phase-compose" data-phase="compose" min="0" max="120" step="0.5" inputmode="decimal">
+      </div>
+      <div class="field">
+        <label for="phase-print">PRINT (S)</label>
+        <input type="number" id="phase-print" data-phase="print" min="0" max="120" step="0.5" inputmode="decimal">
+      </div>
+    </div>
+    <div class="field">
+      <label for="hold">HOLD CARD (S) &middot; 0 = UNTIL RESET</label>
+      <input type="number" id="hold" min="0" max="3600" step="1" inputmode="decimal">
+    </div>
+    <p class="total dim">PRINT RUNS <span class="amber" id="total"></span></p>
+  </section>
+
+  <section class="panel">
+    <h2 class="panel__title">DISPLAY</h2>
+    <div class="field">
+      <label class="field__label" for="scanlines">SCANLINES <span class="amber" id="scanlines-value"></span></label>
+      <input type="range" id="scanlines" min="0" max="1" step="0.05">
+    </div>
+    <label class="check"><input type="checkbox" id="show-connection"> SHOW CONNECTION INFO ON SCREEN</label>
+    <p class="hint dim">PHONE URL: {{ base_url }}/user<br>DISPLAY KEYS: SPACE/ENTER START &middot; R REPLAY &middot; ESC RESET &middot; I INFO</p>
+  </section>
+
+  <nav class="footer-links">
+    <a href="{{ url_for('user.index') }}">CAPTURE</a>
+    <a href="{{ url_for('server.display') }}" target="_blank" rel="noopener">OPEN DISPLAY</a>
+  </nav>
+</main>
+{% endblock %}
+
+{% block scripts %}<script src="{{ url_for('static', filename='js/operator.js') }}"></script>{% endblock %}

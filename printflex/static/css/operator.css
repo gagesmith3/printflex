@@ -1,0 +1,27 @@
+/* Crew panel. */
+
+.job-line { margin: 8px 2px 0; font-size: 20px; }
+
+.mode { display: grid; grid-template-columns: 1fr 1fr; border: 2px solid var(--green-dim); }
+.mode__option {
+  min-height: 52px;
+  border: 0;
+  background: transparent;
+  color: var(--green-dim);
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.mode__option[aria-checked="true"] { background: var(--green); color: var(--bg); }
+
+.hint { margin: 8px 0 14px; font-size: 20px; line-height: 1.3; }
+
+.controls { grid-template-columns: 1fr; }
+.controls .btn { min-height: 64px; }
+@media (min-width: 480px) {
+  .controls { grid-template-columns: repeat(3, 1fr); }
+}
+
+.check { display: flex; align-items: center; gap: 10px; margin: 6px 0; font-size: 22px; }
+.total { margin: 0; font-size: 22px; }

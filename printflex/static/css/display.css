@@ -1,0 +1,313 @@
+/* Display screen. Everything is laid out on a fixed 1920x1080 stage that display.js scales to fit.
+   Animated properties are limited to transform and opacity so it stays smooth on the UNO Q. */
+
+html, body { width: 100%; height: 100%; overflow: hidden; background: #000; }
+.page-display { cursor: none; }
+
+.viewport { position: fixed; inset: 0; overflow: hidden; background: #000; }
+
+.stage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  transform: translate(-50%, -50%) scale(var(--stage-scale, 1));
+  background: radial-gradient(ellipse at 50% 40%, #170c2e 0%, var(--bg) 70%);
+  font-size: 34px;
+}
+
+/* ---- Chrome --------------------------------------------------------------- */
+
+.topbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  background: linear-gradient(90deg, var(--magenta), var(--cyan));
+  color: var(--bg);
+  font-size: 36px;
+}
+.topbar .pixel { font-size: 22px; }
+
+.bottombar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 48px;
+  padding: 0 32px;
+  background: #1b1030;
+  border-top: 3px solid var(--panel-edge);
+  color: var(--cyan);
+  font-size: 32px;
+}
+.bottombar__link { margin-left: auto; color: var(--green); }
+
+.screen { position: absolute; top: 64px; bottom: 56px; left: 0; right: 0; }
+
+/* ---- Idle ----------------------------------------------------------------- */
+
+.horizon { position: absolute; left: 0; right: 0; bottom: 0; height: 44%; overflow: hidden; }
+.horizon::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  z-index: 1;
+  background: var(--magenta);
+  box-shadow: 0 0 36px 10px rgba(255, 47, 208, 0.55);
+}
+.grid {
+  position: absolute;
+  top: 0;
+  left: -50%;
+  width: 200%;
+  height: 600px;
+  transform-origin: 50% 0;
+  background-image:
+    repeating-linear-gradient(to right, rgba(46, 230, 255, 0.5) 0 3px, transparent 3px 80px),
+    repeating-linear-gradient(to bottom, rgba(255, 47, 208, 0.5) 0 3px, transparent 3px 80px);
+  animation: grid-scroll 1.4s linear infinite;
+}
+@keyframes grid-scroll {
+  from { transform: perspective(700px) rotateX(72deg) translateY(-80px); }
+  to { transform: perspective(700px) rotateX(72deg) translateY(0); }
+}
+
+.idle { position: absolute; top: 90px; left: 0; right: 0; text-align: center; }
+.logo {
+  margin: 0;
+  font-size: 124px;
+  font-weight: normal;
+  letter-spacing: 0.04em;
+  background: linear-gradient(180deg, #ffffff 0%, var(--cyan) 45%, var(--magenta) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 18px rgba(255, 47, 208, 0.55));
+}
+.tagline { margin: 28px 0 0; color: var(--cyan); font-size: 44px; letter-spacing: 0.18em; }
+.ready { margin: 70px 0 0; font-size: 76px; }
+.ready.is-loaded { color: var(--amber); text-shadow: 0 0 10px rgba(255, 182, 39, 0.6); }
+.ready__sub { margin: 6px 0 0; font-size: 42px; }
+
+.connection {
+  position: absolute;
+  top: 28px;
+  right: 36px;
+  z-index: 5;
+  padding: 16px 24px;
+  border: 3px solid var(--amber);
+  background: rgba(0, 0, 0, 0.75);
+  color: var(--amber);
+  font-size: 44px;
+  text-align: right;
+}
+.connection .pixel { font-size: 20px; }
+
+/* ---- Job: terminal ---------------------------------------------------------- */
+
+.terminal {
+  position: absolute;
+  top: 50px;
+  bottom: 50px;
+  left: 50px;
+  width: 800px;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 28px;
+  border: 3px solid var(--green-dim);
+  background: rgba(0, 0, 0, 0.55);
+}
+.terminal__title { margin-bottom: 18px; color: var(--cyan); font-size: 26px; }
+.terminal__log {
+  flex: 1;
+  margin: 0;
+  overflow: hidden;
+  font-family: var(--font-term);
+  font-size: 36px;
+  line-height: 1.1;
+  white-space: pre-wrap;
+}
+.terminal__progress { color: var(--amber); font-size: 44px; white-space: pre; }
+
+/* ---- Job: printer ------------------------------------------------------------ */
+
+.printer {
+  position: absolute;
+  top: 50px;
+  bottom: 50px;
+  left: 890px;
+  right: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.printer__slot {
+  position: relative;
+  z-index: 2;
+  width: 960px;
+  height: 40px;
+  border: 3px solid #3a2a5a;
+  border-radius: 8px;
+  background: linear-gradient(#000 0 45%, #26183f);
+  box-shadow: inset 0 8px 14px #000;
+}
+.printer__tray {
+  width: 920px;
+  margin-top: -8px;
+  padding: 34px 32px 44px;
+  border: 3px solid var(--panel-edge);
+  border-top: 0;
+  background: #0d0718;
+}
+.printer__bay { position: relative; width: 856px; height: 540px; }
+.printer__waiting {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--green-dim);
+  font-size: 52px;
+}
+
+.print-mask {
+  position: absolute;
+  top: 0;
+  bottom: -34px; /* also hides the card's shadow; height must match MASK_HEIGHT in animation.js */
+  left: -14px;
+  right: -14px;
+  background: #0d0718;
+  transform-origin: 50% 100%;
+}
+.print-head {
+  position: absolute;
+  top: 0;
+  left: -24px;
+  right: -24px;
+  height: 8px;
+  background: var(--cyan);
+  box-shadow: 0 0 24px 6px rgba(46, 230, 255, 0.8);
+}
+
+.banner { margin-top: 30px; color: var(--magenta); font-size: 40px; text-shadow: 0 0 16px currentColor; }
+
+/* ---- License card ------------------------------------------------------------ */
+
+.idcard {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 28px;
+  background: linear-gradient(135deg, #f3f0e4 0%, #dff1f0 55%, #f4e0ef 100%);
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.6);
+  color: #1a1a2a;
+  font-family: "Roboto Condensed", "Arial Narrow", sans-serif;
+}
+.idcard.is-hidden { visibility: hidden; }
+
+.idcard__pattern { position: absolute; inset: 0; width: 100%; height: 100%; color: rgba(30, 110, 160, 0.18); }
+
+.idcard__header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 30px;
+  background: linear-gradient(90deg, #12366b, #1f7a8c);
+  color: #ffffff;
+}
+.idcard__state { font-size: 44px; font-weight: 800; letter-spacing: 0.06em; }
+.idcard__type { color: #ffd76a; font-size: 26px; font-weight: 700; letter-spacing: 0.12em; }
+
+.idcard__photo {
+  position: absolute;
+  top: 96px;
+  left: 30px;
+  width: 240px;
+  height: 320px;
+  border: 2px solid rgba(0, 0, 0, 0.25);
+  background: #9a9aac;
+}
+.idcard__photo canvas,
+.idcard__ghost canvas { display: block; width: 100%; height: 100%; }
+
+.idcard__fields {
+  position: absolute;
+  top: 90px;
+  left: 296px;
+  right: 150px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px 18px;
+}
+.f { display: flex; align-items: baseline; gap: 8px; min-height: 36px; white-space: nowrap; }
+.f--wide { grid-column: 1 / -1; }
+.f--addr { flex-direction: column; align-items: flex-start; gap: 0; }
+.f--row { gap: 18px; }
+.f__k { color: #1f5f9a; font-size: 16px; font-weight: 700; }
+.f__v { font-size: 26px; font-weight: 700; }
+.f__v--red { color: #b3122e; }
+.f__v--name { font-size: 34px; font-weight: 800; letter-spacing: 0.02em; }
+
+.idcard__ghost {
+  position: absolute;
+  right: 34px;
+  bottom: 60px;
+  width: 96px;
+  height: 128px;
+  opacity: 0.35;
+  filter: grayscale(1);
+  mix-blend-mode: multiply;
+}
+.idcard__sig {
+  position: absolute;
+  top: 424px;
+  left: 34px;
+  width: 420px;
+  color: #1d2a6b;
+  font-family: "Caveat", cursive;
+  font-size: 54px;
+  white-space: nowrap;
+}
+.idcard__shine {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, 0.6) 50%, transparent 65%);
+  transform: translateX(-120%);
+  pointer-events: none;
+}
+.idcard.is-done .idcard__shine { animation: shine 1.6s ease-out 0.2s 1 forwards; }
+@keyframes shine { to { transform: translateX(120%); } }
+
+/* Wireframe preview while the card is being composed. */
+.idcard.is-wire {
+  background: rgba(57, 255, 156, 0.04);
+  box-shadow: inset 0 0 0 3px var(--green), 0 0 30px rgba(57, 255, 156, 0.25);
+  color: var(--green);
+}
+.idcard.is-wire .idcard__pattern { color: rgba(57, 255, 156, 0.1); }
+.idcard.is-wire .idcard__header { background: transparent; box-shadow: inset 0 -3px 0 var(--green); color: var(--green); }
+.idcard.is-wire .idcard__type,
+.idcard.is-wire .f__k,
+.idcard.is-wire .f__v--red,
+.idcard.is-wire .idcard__sig { color: var(--green); }
+.idcard.is-wire .idcard__photo { border-color: var(--green); background: #001a0d; }
+.idcard.is-wire .idcard__photo canvas { filter: grayscale(1) sepia(1) hue-rotate(80deg) saturate(2.5); }
+.idcard.is-wire .idcard__ghost { opacity: 0; }

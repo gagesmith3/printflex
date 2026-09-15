@@ -1,0 +1,46 @@
+{# License card. Fields are filled by animation.js from job.card; swap this file to restyle. #}
+<div class="idcard is-hidden" id="card">
+  <svg class="idcard__pattern" viewBox="0 0 856 540" preserveAspectRatio="none" aria-hidden="true">
+    <defs>
+      <pattern id="guilloche" width="64" height="32" patternUnits="userSpaceOnUse">
+        <path d="M0 16 Q16 0 32 16 T64 16" fill="none" stroke="currentColor" stroke-width="1.2"/>
+        <path d="M0 16 Q16 32 32 16 T64 16" fill="none" stroke="currentColor" stroke-width="1.2"/>
+      </pattern>
+    </defs>
+    <rect width="856" height="540" fill="url(#guilloche)"/>
+    <circle cx="610" cy="330" r="150" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="5 7"/>
+    <circle cx="610" cy="330" r="118" fill="none" stroke="currentColor" stroke-width="2"/>
+  </svg>
+
+  <div class="idcard__header">
+    <span class="idcard__state">{{ state_name }}</span>
+    <span class="idcard__type">DRIVER LICENSE</span>
+  </div>
+
+  <div class="idcard__photo"><canvas id="card-photo" width="300" height="400"></canvas></div>
+
+  <div class="idcard__fields">
+    <div class="f f--wide"><span class="f__k">DL</span><span class="f__v f__v--red" data-field="dl_number"></span></div>
+    <div class="f"><span class="f__k">CLASS</span><span class="f__v" data-field="class"></span></div>
+    <div class="f"><span class="f__k">EXP</span><span class="f__v f__v--red" data-field="exp"></span></div>
+    <div class="f f--wide"><span class="f__k">LN</span><span class="f__v f__v--name" data-field="last"></span></div>
+    <div class="f f--wide"><span class="f__k">FN</span><span class="f__v f__v--name" data-field="first"></span></div>
+    <div class="f f--wide f--addr">
+      <span class="f__v" data-field="address1"></span>
+      <span class="f__v" data-field="address2"></span>
+    </div>
+    <div class="f"><span class="f__k">DOB</span><span class="f__v f__v--red" data-field="dob"></span></div>
+    <div class="f"><span class="f__k">ISS</span><span class="f__v" data-field="iss"></span></div>
+    <div class="f f--wide f--row">
+      <span><span class="f__k">SEX</span> <span class="f__v" data-field="sex"></span></span>
+      <span><span class="f__k">HGT</span> <span class="f__v" data-field="height"></span></span>
+      <span><span class="f__k">WGT</span> <span class="f__v" data-field="weight"></span></span>
+      <span><span class="f__k">EYES</span> <span class="f__v" data-field="eyes"></span></span>
+      <span><span class="f__k">HAIR</span> <span class="f__v" data-field="hair"></span></span>
+    </div>
+  </div>
+
+  <div class="idcard__ghost"><canvas id="card-ghost" width="96" height="128"></canvas></div>
+  <div class="idcard__sig" data-field="signature"></div>
+  <div class="idcard__shine"></div>
+</div>

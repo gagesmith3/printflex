@@ -1,0 +1,69 @@
+/* Phone capture page. */
+
+.page-user { --scanlines: 0.15; }
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.viewfinder {
+  position: relative;
+  width: min(100%, 300px);
+  aspect-ratio: 3 / 4;
+  margin: 0 auto 16px;
+  overflow: hidden;
+  background: #000;
+  border: 2px solid var(--green-dim);
+}
+.viewfinder img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 30%; /* matches the server's top-biased crop */
+}
+.viewfinder__empty {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--green-dim);
+  font-size: 30px;
+}
+/* Face guide */
+.viewfinder::after {
+  content: "";
+  position: absolute;
+  top: 12%;
+  left: 22%;
+  right: 22%;
+  height: 54%;
+  border: 2px dashed rgba(57, 255, 156, 0.45);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.corner { position: absolute; width: 22px; height: 22px; border: 3px solid var(--green); }
+.corner--tl { top: 6px; left: 6px; border-right: 0; border-bottom: 0; }
+.corner--tr { top: 6px; right: 6px; border-left: 0; border-bottom: 0; }
+.corner--bl { bottom: 6px; left: 6px; border-right: 0; border-top: 0; }
+.corner--br { bottom: 6px; right: 6px; border-left: 0; border-top: 0; }
+
+.more summary {
+  padding: 6px 0;
+  color: var(--amber);
+  font-size: 22px;
+  list-style: none;
+  cursor: pointer;
+}
+.more summary::-webkit-details-marker { display: none; }
+.more summary::before { content: "\25B6  "; }
+.more[open] summary::before { content: "\25BC  "; }
+.more__hint { margin: 0 0 10px; font-size: 18px; }
+
+.send { min-height: 64px; margin-top: 18px; font-size: 13px; }
