@@ -1,8 +1,20 @@
-/* Display screen. Everything is laid out on a fixed 1920x1080 stage that display.js scales to fit.
-   Animated properties are limited to transform and opacity so it stays smooth on the UNO Q. */
+/* Display screen: the character's own tool. It can look good, but nothing on it says what it is.
+   Laid out on a fixed 1920x1080 stage that display.js scales to fit. Only transform and opacity
+   animate, so it stays smooth on the UNO Q. */
 
 html, body { width: 100%; height: 100%; overflow: hidden; background: #000; }
-.page-display { cursor: none; }
+
+.page-display {
+  /* Palette. The glow, grid lines and wireframe tints all come from --fg-rgb. */
+  --fg-rgb: 120, 196, 255;
+  --fg: rgb(var(--fg-rgb));
+  --dim: #4a82b0;
+  --faint: rgba(var(--fg-rgb), 0.18);
+  --glow: rgba(var(--fg-rgb), 0.45);
+  --bg: #01060c;
+  --err: #ff5a3c;
+  cursor: none;
+}
 
 .viewport { position: fixed; inset: 0; overflow: hidden; background: #000; }
 
@@ -14,197 +26,80 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: #000; }
   height: 1080px;
   overflow: hidden;
   transform: translate(-50%, -50%) scale(var(--stage-scale, 1));
-  background: radial-gradient(ellipse at 50% 40%, #170c2e 0%, var(--bg) 70%);
-  font-size: 34px;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-term);
+  font-size: 44px;
+  text-shadow: 0 0 8px var(--glow);
 }
 
-/* ---- Chrome --------------------------------------------------------------- */
+/* ---- Frame of the program ----------------------------------------------------- */
 
-.topbar {
+.topline,
+.bottomline {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 64px;
+  left: 48px;
+  right: 48px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 32px;
-  background: linear-gradient(90deg, var(--magenta), var(--cyan));
-  color: var(--bg);
-  font-size: 36px;
 }
-.topbar .pixel { font-size: 22px; }
+.topline { top: 0; height: 80px; border-bottom: 2px solid var(--dim); }
+.topline__right { display: flex; gap: 56px; }
+#link-status.is-down { color: var(--err); }
+.bottomline { bottom: 0; height: 72px; border-top: 2px solid var(--dim); color: var(--dim); font-size: 38px; }
+.bottomline b { color: var(--fg); font-weight: normal; }
 
-.bottombar {
+.main { position: absolute; top: 80px; bottom: 72px; left: 48px; right: 48px; }
+
+.frame { position: absolute; top: 48px; border: 2px solid var(--dim); }
+.frame__label {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  gap: 48px;
-  padding: 0 32px;
-  background: #1b1030;
-  border-top: 3px solid var(--panel-edge);
-  color: var(--cyan);
-  font-size: 32px;
-}
-.bottombar__link { margin-left: auto; color: var(--green); }
-
-.screen { position: absolute; top: 64px; bottom: 56px; left: 0; right: 0; }
-
-/* ---- Idle ----------------------------------------------------------------- */
-
-.horizon { position: absolute; left: 0; right: 0; bottom: 0; height: 44%; overflow: hidden; }
-.horizon::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  z-index: 1;
-  background: var(--magenta);
-  box-shadow: 0 0 36px 10px rgba(255, 47, 208, 0.55);
-}
-.grid {
-  position: absolute;
-  top: 0;
-  left: -50%;
-  width: 200%;
-  height: 600px;
-  transform-origin: 50% 0;
-  background-image:
-    repeating-linear-gradient(to right, rgba(46, 230, 255, 0.5) 0 3px, transparent 3px 80px),
-    repeating-linear-gradient(to bottom, rgba(255, 47, 208, 0.5) 0 3px, transparent 3px 80px);
-  animation: grid-scroll 1.4s linear infinite;
-}
-@keyframes grid-scroll {
-  from { transform: perspective(700px) rotateX(72deg) translateY(-80px); }
-  to { transform: perspective(700px) rotateX(72deg) translateY(0); }
+  top: -18px;
+  left: 24px;
+  padding: 0 12px;
+  background: var(--bg);
+  color: var(--dim);
+  font-size: 34px;
+  line-height: 1;
 }
 
-.idle { position: absolute; top: 90px; left: 0; right: 0; text-align: center; }
-.logo {
-  margin: 0;
-  font-size: 124px;
-  font-weight: normal;
-  letter-spacing: 0.04em;
-  background: linear-gradient(180deg, #ffffff 0%, var(--cyan) 45%, var(--magenta) 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  filter: drop-shadow(0 0 18px rgba(255, 47, 208, 0.55));
-}
-.tagline { margin: 28px 0 0; color: var(--cyan); font-size: 44px; letter-spacing: 0.18em; }
-.ready { margin: 70px 0 0; font-size: 76px; }
-.ready.is-loaded { color: var(--amber); text-shadow: 0 0 10px rgba(255, 182, 39, 0.6); }
-.ready__sub { margin: 6px 0 0; font-size: 42px; }
+.frame--log { left: 0; bottom: 48px; width: 820px; padding: 36px 32px; }
+.log { height: 100%; margin: 0; overflow: hidden; font: inherit; line-height: 1.18; white-space: pre-wrap; }
 
-.connection {
-  position: absolute;
-  top: 28px;
-  right: 36px;
-  z-index: 5;
-  padding: 16px 24px;
-  border: 3px solid var(--amber);
-  background: rgba(0, 0, 0, 0.75);
-  color: var(--amber);
-  font-size: 44px;
-  text-align: right;
-}
-.connection .pixel { font-size: 20px; }
-
-/* ---- Job: terminal ---------------------------------------------------------- */
-
-.terminal {
-  position: absolute;
-  top: 50px;
-  bottom: 50px;
-  left: 50px;
-  width: 800px;
-  display: flex;
-  flex-direction: column;
-  padding: 24px 28px;
-  border: 3px solid var(--green-dim);
-  background: rgba(0, 0, 0, 0.55);
-}
-.terminal__title { margin-bottom: 18px; color: var(--cyan); font-size: 26px; }
-.terminal__log {
-  flex: 1;
-  margin: 0;
-  overflow: hidden;
-  font-family: var(--font-term);
-  font-size: 36px;
-  line-height: 1.1;
-  white-space: pre-wrap;
-}
-.terminal__progress { color: var(--amber); font-size: 44px; white-space: pre; }
-
-/* ---- Job: printer ------------------------------------------------------------ */
-
-.printer {
-  position: absolute;
-  top: 50px;
-  bottom: 50px;
-  left: 890px;
-  right: 40px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.printer__slot {
-  position: relative;
-  z-index: 2;
-  width: 960px;
-  height: 40px;
-  border: 3px solid #3a2a5a;
-  border-radius: 8px;
-  background: linear-gradient(#000 0 45%, #26183f);
-  box-shadow: inset 0 8px 14px #000;
-}
-.printer__tray {
-  width: 920px;
-  margin-top: -8px;
-  padding: 34px 32px 44px;
-  border: 3px solid var(--panel-edge);
-  border-top: 0;
-  background: #0d0718;
-}
-.printer__bay { position: relative; width: 856px; height: 540px; }
-.printer__waiting {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  color: var(--green-dim);
-  font-size: 52px;
-}
+.frame--preview { right: 0; width: 940px; padding: 42px; }
+.bay { position: relative; width: 856px; height: 540px; }
+.waiting { position: absolute; inset: 0; display: grid; place-items: center; color: var(--dim); }
 
 .print-mask {
   position: absolute;
   top: 0;
-  bottom: -34px; /* also hides the card's shadow; height must match MASK_HEIGHT in animation.js */
-  left: -14px;
-  right: -14px;
-  background: #0d0718;
+  bottom: 0; /* height must match CARD_HEIGHT in animation.js */
+  left: -10px;
+  right: -10px;
+  background: var(--bg);
   transform-origin: 50% 100%;
 }
 .print-head {
   position: absolute;
   top: 0;
-  left: -24px;
-  right: -24px;
-  height: 8px;
-  background: var(--cyan);
-  box-shadow: 0 0 24px 6px rgba(46, 230, 255, 0.8);
+  left: -20px;
+  right: -20px;
+  height: 6px;
+  background: var(--fg);
+  box-shadow: 0 0 20px 4px rgba(var(--fg-rgb), 0.65);
 }
 
-.banner { margin-top: 30px; color: var(--magenta); font-size: 40px; text-shadow: 0 0 16px currentColor; }
+.connection {
+  position: absolute;
+  top: 712px;
+  right: 0;
+  padding: 10px 20px;
+  border: 2px solid var(--fg);
+  background: var(--bg);
+}
 
-/* ---- License card ------------------------------------------------------------ */
+/* ---- License card: the product, so it gets the polish ------------------------- */
 
 .idcard {
   position: absolute;
@@ -212,9 +107,9 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: #000; }
   overflow: hidden;
   border-radius: 28px;
   background: linear-gradient(135deg, #f3f0e4 0%, #dff1f0 55%, #f4e0ef 100%);
-  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.6);
   color: #1a1a2a;
   font-family: "Roboto Condensed", "Arial Narrow", sans-serif;
+  text-shadow: none;
 }
 .idcard.is-hidden { visibility: hidden; }
 
@@ -289,25 +184,67 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: #000; }
 .idcard__shine {
   position: absolute;
   inset: 0;
-  background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, 0.6) 50%, transparent 65%);
+  background: linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, 0.45) 50%, transparent 62%);
   transform: translateX(-120%);
   pointer-events: none;
 }
 .idcard.is-done .idcard__shine { animation: shine 1.6s ease-out 0.2s 1 forwards; }
 @keyframes shine { to { transform: translateX(120%); } }
 
-/* Wireframe preview while the card is being composed. */
+/* Wireframe while the card is being laid out. */
 .idcard.is-wire {
-  background: rgba(57, 255, 156, 0.04);
-  box-shadow: inset 0 0 0 3px var(--green), 0 0 30px rgba(57, 255, 156, 0.25);
-  color: var(--green);
+  background: rgba(var(--fg-rgb), 0.04);
+  box-shadow: inset 0 0 0 3px var(--fg);
+  color: var(--fg);
+  text-shadow: 0 0 8px var(--glow);
 }
-.idcard.is-wire .idcard__pattern { color: rgba(57, 255, 156, 0.1); }
-.idcard.is-wire .idcard__header { background: transparent; box-shadow: inset 0 -3px 0 var(--green); color: var(--green); }
+.idcard.is-wire .idcard__pattern { color: rgba(var(--fg-rgb), 0.1); }
+.idcard.is-wire .idcard__header { background: transparent; box-shadow: inset 0 -3px 0 var(--fg); color: var(--fg); }
 .idcard.is-wire .idcard__type,
 .idcard.is-wire .f__k,
 .idcard.is-wire .f__v--red,
-.idcard.is-wire .idcard__sig { color: var(--green); }
-.idcard.is-wire .idcard__photo { border-color: var(--green); background: #001a0d; }
-.idcard.is-wire .idcard__photo canvas { filter: grayscale(1) sepia(1) hue-rotate(80deg) saturate(2.5); }
+.idcard.is-wire .idcard__sig { color: var(--fg); }
+.idcard.is-wire .idcard__photo { border-color: var(--fg); background: #000c18; }
+/* Sepia gives a warm tint; rotating it about 170deg lands near --fg. */
+.idcard.is-wire .idcard__photo canvas { filter: grayscale(1) sepia(1) hue-rotate(170deg) saturate(2.5) brightness(1.1); }
 .idcard.is-wire .idcard__ghost { opacity: 0; }
+
+/* ---- Panic screen ---------------------------------------------------------------- */
+
+.decoy {
+  position: absolute;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  font-size: 36px;
+}
+.decoy__bar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  padding: 0 32px;
+  background: var(--fg);
+  color: var(--bg);
+  text-shadow: none;
+}
+.decoy__sheet { flex: 1; width: 100%; border-collapse: collapse; table-layout: fixed; }
+.decoy__sheet th,
+.decoy__sheet td {
+  height: 45px;
+  padding: 0 16px;
+  border: 1px solid var(--faint);
+  overflow: hidden;
+  font-weight: normal;
+  text-align: left;
+  white-space: nowrap;
+}
+.decoy__sheet thead th { background: var(--dim); color: var(--bg); text-align: center; text-shadow: none; }
+.decoy__sheet thead th:first-child { width: 90px; }
+.decoy__sheet thead th:nth-child(2) { width: 38%; }
+.decoy__sheet tbody th { color: var(--dim); text-align: right; }
+.decoy__sheet .num { text-align: right; }
+.decoy__cell { background: var(--fg); color: var(--bg); text-shadow: none; }

@@ -23,6 +23,7 @@ Something to keep in mind is that this app will also eventually control GPIO pin
 - **Screen:** size not decided yet, so everything is laid out on a 1920x1080 stage that scales to any display.
 - **Animation:** code-driven (HTML/CSS/JS) with a placeholder timeline: receive → compose → print → done.
 - **Card:** the phone sends the photo and first/last name, and everything else is random. Optional overrides cover DOB, sex, height, eyes, and hair. The state is New Jersey (set in config), on a generic card layout rather than the real NJ design.
+- **Look:** a one-off tool a genius South Jersey criminal wrote for their own use. It's set in the present day and still looks cool, just toned back slightly. Cool blue terminal with framed log and preview panels, and no branding or labels that say what it does. The card is the only polished thing. The prompt shows the operator alias (`PRINTFLEX_OPERATOR`), and a panic key covers the screen with a decoy spreadsheet.
 - **Trigger:** switchable. Auto prints on arrival; Cue waits for START.
 - **Crew tools:** reset/abort, replay last, timing settings.
 - **Defaults:**

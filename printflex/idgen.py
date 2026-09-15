@@ -62,6 +62,7 @@ def generate_card(
         "restrictions": "NONE",
         "endorsements": "NONE",
         "dob": _fmt(dob),
+        "age": _age(dob, today),
         "iss": _fmt(issued),
         "exp": _fmt(expires),
         "sex": _choice(given.get("sex"), ALLOWED_SEXES, "SEX") or rng.choice(SEXES),
@@ -83,6 +84,10 @@ def _zip_code(rng: random.Random, state_abbr: str) -> str:
 
 def _fmt(value: date) -> str:
     return value.strftime("%m/%d/%Y")
+
+
+def _age(dob: date, today: date) -> int:
+    return today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
 
 
 def _safe_date(year: int, month: int, day: int) -> date:

@@ -45,7 +45,12 @@ def events():
 @bp.post("/api/control/<action>")
 def control(action: str):
     controller = services().controller
-    handlers = {"start": controller.start, "replay": controller.replay, "reset": controller.reset}
+    handlers = {
+        "start": controller.start,
+        "replay": controller.replay,
+        "reset": controller.reset,
+        "panic": controller.toggle_panic,
+    }
     if action not in handlers:
         abort(404)
     try:

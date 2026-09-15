@@ -57,6 +57,7 @@ def create_app(overrides: dict | None = None, scheduler=None) -> Flask:
     def branding():
         return {
             "software_name": app.config["SOFTWARE_NAME"],
+            "operator": app.config["OPERATOR"],
             "state_name": app.config["STATE_NAME"],
             "state_abbr": app.config["STATE_ABBR"],
         }

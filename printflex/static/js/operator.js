@@ -17,12 +17,17 @@
   function renderState() {
     const state = snapshot ? snapshot.state : "offline";
     const card = snapshot && snapshot.job && snapshot.job.card;
+    const panic = Boolean(snapshot && snapshot.panic);
     $("status").dataset.state = state;
-    $("status-text").textContent = STATE_LABELS[state] + (card ? " : " + card.last + ", " + card.first : "");
+    $("status-text").textContent =
+      STATE_LABELS[state] + (card ? " : " + card.last + ", " + card.first : "") + (panic ? " · PANIC" : "");
     $("job-line").textContent = "LAST JOB: " + (snapshot && snapshot.last_job ? snapshot.last_job.name : "NONE");
     $("btn-start").disabled = state !== "loaded";
     $("btn-replay").disabled = !(snapshot && snapshot.last_job);
     $("btn-reset").disabled = !snapshot;
+    $("btn-panic").disabled = !snapshot;
+    $("btn-panic").setAttribute("aria-pressed", String(panic));
+    $("btn-panic").textContent = "PANIC SCREEN: " + (panic ? "ON" : "OFF");
   }
 
   // Don't overwrite a field the crew member is typing in.
@@ -111,7 +116,7 @@
     button.addEventListener("click", async () => {
       try {
         const result = await post("/server/api/control/" + button.dataset.action);
-        if (result.ok) showMessage(button.textContent + " OK", "ok");
+        if (result.ok) showMessage(button.dataset.action.toUpperCase() + " OK", "ok");
         else showMessage(result.data.message || "ERROR " + result.status, "error");
       } catch (_) {
         showMessage("NO CONNECTION", "error");

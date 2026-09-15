@@ -23,6 +23,7 @@ def test_random_cards_are_well_formed():
         c = card(seed)
         dob, issued, expires = parse(c["dob"]), parse(c["iss"]), parse(c["exp"])
         age = TODAY.year - dob.year - ((TODAY.month, TODAY.day) < (dob.month, dob.day))
+        assert c["age"] == age
         assert 21 <= age <= 40
         assert issued <= TODAY < expires
         assert re.fullmatch(r"[A-Z]\d{3}-\d{3}-\d{3}", c["dl_number"])

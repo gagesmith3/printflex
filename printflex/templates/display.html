@@ -1,55 +1,41 @@
 {% extends "base.html" %}
-{% block title %}{{ software_name }} · Display{% endblock %}
+{% block title %}{{ software_name|lower }}{% endblock %}
 {% block head %}<link rel="stylesheet" href="{{ url_for('static', filename='css/display.css') }}">{% endblock %}
 {% block body_class %}page-display{% endblock %}
 
 {% block body %}
 <div class="viewport">
-  <div class="stage crt" id="stage">
-    <header class="topbar">
-      <span class="pixel">{{ software_name }} ID SYSTEM</span>
-      <span>STATION 04 &middot; MODE <span id="mode-label">AUTO</span></span>
-      <span id="clock">00:00:00</span>
+  <div class="stage crt" id="stage" data-program="{{ software_name|lower }}">
+    <header class="topline">
+      <span>{{ operator }}@{{ software_name|lower }}</span>
+      <span class="topline__right"><span id="link-status">link ok</span><span id="clock">00:00:00</span></span>
     </header>
 
-    <section class="screen" id="screen-idle">
-      <div class="horizon"><div class="grid"></div></div>
-      <div class="idle">
-        <h1 class="logo pixel">{{ software_name }}</h1>
-        <p class="tagline">IDENTIFICATION CARD SYSTEM &middot; {{ state_name }}</p>
-        <p class="ready glow" id="ready-text"><span class="blink">&#9608;</span><span id="ready-label"> READY</span></p>
-        <p class="ready__sub dim" id="ready-sub">AWAITING TRANSMISSION</p>
-      </div>
-      <div class="connection" id="connection" hidden>
-        <div class="pixel">CONNECT</div>
-        <div>{{ base_url }}/user</div>
-      </div>
-    </section>
+    <div class="main">
+      <section class="frame frame--log">
+        <span class="frame__label">log</span>
+        <pre class="log"><span id="log"></span><span class="blink">&#9608;</span></pre>
+      </section>
 
-    <section class="screen" id="screen-job" hidden>
-      <div class="terminal">
-        <div class="terminal__title pixel" id="phase-label">RECEIVING</div>
-        <pre class="terminal__log glow" id="log"></pre>
-        <div class="terminal__progress" id="progress"></div>
-      </div>
-      <div class="printer">
-        <div class="printer__slot"></div>
-        <div class="printer__tray">
-          <div class="printer__bay">
-            {% include "_card.html" %}
-            <div class="print-mask" id="print-mask" hidden></div>
-            <div class="print-head" id="print-head" hidden></div>
-            <div class="printer__waiting blink" id="waiting" hidden>AWAITING DATA</div>
-          </div>
+      <section class="frame frame--preview">
+        <span class="frame__label">preview</span>
+        <div class="bay">
+          {% include "_card.html" %}
+          <div class="print-mask" id="print-mask" hidden></div>
+          <div class="print-head" id="print-head" hidden></div>
+          <div class="waiting" id="waiting">no data</div>
         </div>
-        <div class="banner pixel blink" id="banner" hidden>PRINT COMPLETE</div>
-      </div>
-    </section>
+      </section>
 
-    <footer class="bottombar">
-      <span>F1 HELP</span><span>F2 NEW</span><span>F5 PRINT</span><span>F10 EXIT</span>
-      <span class="bottombar__link" id="link-status">LINK OK</span>
+      <div class="connection" id="connection" hidden>connect &nbsp;{{ base_url }}/user</div>
+    </div>
+
+    <footer class="bottomline">
+      <span><b>[enter]</b> print &nbsp; <b>[r]</b> again &nbsp; <b>[esc]</b> abort</span>
+      <span>log: off</span>
     </footer>
+
+    {% include "_decoy.html" %}
   </div>
 </div>
 {% endblock %}

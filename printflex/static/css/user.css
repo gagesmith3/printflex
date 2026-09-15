@@ -1,6 +1,35 @@
-/* Phone capture page. */
+/* Phone page: the character's own no-frills drop form. Same blue as the display. */
 
-.page-user { --scanlines: 0.15; }
+.page-user {
+  --fg: #78c4ff;
+  --dim: #4a82b0;
+  --faint: rgba(120, 196, 255, 0.35);
+  --bg: #01060c;
+  --err: #ff5a3c;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-term);
+  font-size: 24px;
+}
+
+.raw {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 12px 16px calc(28px + env(safe-area-inset-bottom, 0px));
+}
+
+.raw__top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--dim);
+}
+#status[data-state="offline"] { color: var(--err); }
+#status[data-state="printing"],
+#status[data-state="done"] { color: var(--dim); }
 
 .visually-hidden {
   position: absolute;
@@ -11,59 +40,87 @@
   pointer-events: none;
 }
 
-.viewfinder {
+.shot {
   position: relative;
-  width: min(100%, 300px);
+  width: min(100%, 280px);
   aspect-ratio: 3 / 4;
-  margin: 0 auto 16px;
+  margin: 0 auto 12px;
   overflow: hidden;
+  border: 1px solid var(--dim);
   background: #000;
-  border: 2px solid var(--green-dim);
 }
-.viewfinder img {
+.shot img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: 50% 30%; /* matches the server's top-biased crop */
 }
-.viewfinder__empty {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  color: var(--green-dim);
-  font-size: 30px;
-}
+.shot__empty { position: absolute; inset: 0; display: grid; place-items: center; color: var(--dim); }
 /* Face guide */
-.viewfinder::after {
+.shot::after {
   content: "";
   position: absolute;
   top: 12%;
   left: 22%;
   right: 22%;
   height: 54%;
-  border: 2px dashed rgba(57, 255, 156, 0.45);
+  border: 1px dashed var(--faint);
   border-radius: 50%;
   pointer-events: none;
 }
 
-.corner { position: absolute; width: 22px; height: 22px; border: 3px solid var(--green); }
-.corner--tl { top: 6px; left: 6px; border-right: 0; border-bottom: 0; }
-.corner--tr { top: 6px; right: 6px; border-left: 0; border-bottom: 0; }
-.corner--bl { bottom: 6px; left: 6px; border-right: 0; border-top: 0; }
-.corner--br { bottom: 6px; right: 6px; border-left: 0; border-top: 0; }
-
-.more summary {
-  padding: 6px 0;
-  color: var(--amber);
-  font-size: 22px;
-  list-style: none;
+.keys { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+.key {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  padding: 0 8px;
+  border: 1px solid var(--fg);
+  border-radius: 0;
+  background: transparent;
+  color: var(--fg);
+  font: inherit;
+  font-size: 26px;
   cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
-.more summary::-webkit-details-marker { display: none; }
-.more summary::before { content: "\25B6  "; }
-.more[open] summary::before { content: "\25BC  "; }
-.more__hint { margin: 0 0 10px; font-size: 18px; }
+.key::before { content: "["; margin-right: 0.35em; color: var(--dim); }
+.key::after { content: "]"; margin-left: 0.35em; color: var(--dim); }
+.key:active { background: var(--fg); color: var(--bg); }
+.key:disabled { border-color: var(--dim); color: var(--dim); cursor: not-allowed; }
+.key--send { width: 100%; min-height: 60px; margin-top: 20px; }
 
-.send { min-height: 64px; margin-top: 18px; font-size: 13px; }
+.line { display: grid; grid-template-columns: 4em 1fr; align-items: center; gap: 8px; margin-bottom: 10px; }
+.line > span { color: var(--dim); }
+
+.page-user input:not([type="file"]),
+.page-user select {
+  width: 100%;
+  min-width: 0;
+  padding: 4px 6px;
+  border: 0;
+  border-bottom: 1px solid var(--dim);
+  border-radius: 0;
+  background: transparent;
+  color: var(--fg);
+  font: inherit;
+  font-size: 26px;
+  text-transform: uppercase;
+  color-scheme: dark;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.page-user input:focus,
+.page-user select:focus { outline: none; border-bottom-color: var(--fg); }
+.page-user select option { background: #000; color: var(--fg); }
+.page-user ::placeholder { color: var(--dim); opacity: 1; }
+
+.more summary { padding: 6px 0 10px; color: var(--dim); list-style: none; cursor: pointer; }
+.more summary::-webkit-details-marker { display: none; }
+.more[open] summary { color: var(--fg); }
+
+.out { min-height: 1.2em; margin: 14px 0 0; }
+.out--error { color: var(--err); }

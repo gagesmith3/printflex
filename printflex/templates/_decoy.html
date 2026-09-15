@@ -1,0 +1,39 @@
+{# Panic screen: a dull parts-inventory spreadsheet that covers everything. #}
+{% set rows = [
+  ("OIL FILTER", 24, 4.89),
+  ("AIR FILTER", 12, 11.25),
+  ("WIPER BLADE 22IN", 18, 6.49),
+  ("BRAKE PADS FRONT", 8, 32.10),
+  ("SPARK PLUGS 4PK", 10, 14.99),
+  ("COOLANT 1 GAL", 16, 12.79),
+  ("HEADLIGHT BULB", 20, 8.35),
+  ("SERPENTINE BELT", 6, 27.40),
+  ("BATTERY 24F", 4, 118.00),
+  ("DOT 3 BRAKE FLUID", 14, 5.69),
+  ("SHOP RAGS BOX", 5, 21.50),
+  ("TIRE PATCH KIT", 9, 7.25),
+] %}
+{% set ns = namespace(total=0) %}
+<div class="decoy" id="decoy" hidden>
+  <div class="decoy__bar"><span>A1: ITEM</span><span>READY</span></div>
+  <table class="decoy__sheet">
+    <thead>
+      <tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th></tr>
+    </thead>
+    <tbody>
+      <tr><th>1</th><td class="decoy__cell">ITEM</td><td>QTY</td><td>UNIT</td><td>TOTAL</td><td></td></tr>
+      {% for item, qty, unit in rows %}
+      {% set ns.total = ns.total + qty * unit %}
+      <tr>
+        <th>{{ loop.index + 1 }}</th><td>{{ item }}</td><td class="num">{{ qty }}</td>
+        <td class="num">{{ "%.2f"|format(unit) }}</td><td class="num">{{ "{:,.2f}".format(qty * unit) }}</td><td></td>
+      </tr>
+      {% endfor %}
+      <tr><th>{{ rows|length + 2 }}</th><td></td><td></td><td class="num">TOTAL</td><td class="num">{{ "{:,.2f}".format(ns.total) }}</td><td></td></tr>
+      {% for n in range(rows|length + 3, 20) %}
+      <tr><th>{{ n }}</th><td></td><td></td><td></td><td></td><td></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <div class="decoy__bar"><span>PARTS_INV.WK1</span><span id="decoy-date"></span></div>
+</div>

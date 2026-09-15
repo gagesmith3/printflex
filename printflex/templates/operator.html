@@ -24,6 +24,7 @@
       <button type="button" class="btn btn--cyan btn--block" data-action="replay" id="btn-replay">REPLAY LAST</button>
       <button type="button" class="btn btn--danger btn--block" data-action="reset" id="btn-reset">RESET</button>
     </div>
+    <button type="button" class="btn btn--block btn--panic" data-action="panic" id="btn-panic" aria-pressed="false">PANIC SCREEN: OFF</button>
     <p class="message" id="message" role="status" aria-live="polite"></p>
   </section>
 
@@ -61,7 +62,7 @@
       <input type="range" id="scanlines" min="0" max="1" step="0.05">
     </div>
     <label class="check"><input type="checkbox" id="show-connection"> SHOW CONNECTION INFO ON SCREEN</label>
-    <p class="hint dim">PHONE URL: {{ base_url }}/user<br>DISPLAY KEYS: SPACE/ENTER START &middot; R REPLAY &middot; ESC RESET &middot; I INFO</p>
+    <p class="hint dim">PHONE URL: {{ base_url }}/user<br>DISPLAY KEYS: SPACE/ENTER START &middot; R REPLAY &middot; ESC RESET &middot; ` PANIC &middot; I INFO</p>
   </section>
 
   <nav class="footer-links">

@@ -25,6 +25,7 @@ class Config:
 
     # In-world branding.
     SOFTWARE_NAME = _env("SOFTWARE_NAME", "PRINTFLEX")
+    OPERATOR = _env("OPERATOR", "user")  # the character's handle, shown as operator@printflex
     STATE_NAME = _env("STATE_NAME", "NEW JERSEY")
     STATE_ABBR = _env("STATE_ABBR", "NJ")
     # "Today" as far as the card is concerned (YYYY-MM-DD), for period pieces. Blank = real date.

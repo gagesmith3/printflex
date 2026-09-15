@@ -41,9 +41,11 @@ def _job_summary(job: dict | None) -> dict | None:
 class PrinterController:
     """IDLE -> (LOADED) -> PRINTING -> DONE -> IDLE.
 
-    The server owns the timeline. Each state change bumps `seq` and is published to
-    SSE clients; every scheduled callback carries the generation it was created in,
-    so callbacks left over from before a RESET or REPLAY do nothing.
+    The server owns the timeline. Each change bumps `seq` and is published to SSE
+    clients. `run` (the generation) changes only on state transitions, and every
+    scheduled callback carries the generation it was created in, so callbacks left
+    over from before a RESET or REPLAY do nothing. The panic screen is independent
+    of the state: printing carries on underneath it.
     """
 
     def __init__(self, settings, events, hardware, scheduler=None, clock=time.monotonic):
@@ -62,6 +64,7 @@ class PrinterController:
         self._last_job = None
         self._phases = []
         self._started_at = None
+        self._panic = False
 
     @property
     def state(self) -> str:
@@ -85,6 +88,8 @@ class PrinterController:
             return {
                 "boot_id": self._boot_id,
                 "seq": self._seq,
+                "run": self._generation,
+                "panic": self._panic,
                 "state": self._state,
                 "job": self._job,
                 "phases": self._phases,
@@ -121,6 +126,13 @@ class PrinterController:
             self._enter_idle()
             return self.snapshot()
 
+    def toggle_panic(self) -> dict:
+        """Cover the display with the decoy screen, or uncover it."""
+        with self._lock:
+            self._panic = not self._panic
+            self._publish()
+            return self.snapshot()
+
     # Transitions -------------------------------------------------------------
 
     def _begin(self, job: dict) -> None:
@@ -149,7 +161,7 @@ class PrinterController:
     def _enter_done(self) -> None:
         self._cancel_timers()
         job = self._job
-        self._set(DONE, job)
+        self._set(DONE, job, self._phases)
         self._notify_hardware("done", job)
         hold = self._settings.get("hold_seconds")
         if hold > 0:

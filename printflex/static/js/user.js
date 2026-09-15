@@ -1,9 +1,10 @@
-// Phone capture page: take a photo, enter a name, send it to the printer.
+// Phone page: take a photo, enter a name, send it to the display.
 (function () {
   "use strict";
 
-  const { STATE_LABELS, connectEvents, latestState, post } = window.PrintFlex;
+  const { connectEvents, latestState, post } = window.PrintFlex;
   const MAX_EDGE = 1600;
+  const LABELS = { idle: "ready", loaded: "loaded", printing: "busy", done: "busy", offline: "no link" };
 
   const $ = (id) => document.getElementById(id);
   const form = $("capture-form");
@@ -15,21 +16,21 @@
   let printerState = "offline";
   let sending = false;
 
-  function showMessage(text, kind) {
-    message.textContent = text;
-    message.className = "message" + (kind ? " message--" + kind : "");
+  function say(text, isError) {
+    message.textContent = text ? "> " + text : "";
+    message.className = "out" + (isError ? " out--error" : "");
   }
 
   function updateSendButton() {
     const busy = printerState === "printing" || printerState === "done";
     sendButton.disabled = sending || busy;
-    sendButton.textContent = sending ? "TRANSMITTING..." : busy ? "PRINTER BUSY" : ">> SEND TO PRINTER <<";
+    sendButton.textContent = sending ? "sending" : busy ? "busy" : "send";
   }
 
-  function setStatus(state, detail) {
+  function setStatus(state) {
     printerState = state;
     $("status").dataset.state = state;
-    $("status-text").textContent = STATE_LABELS[state] + (detail ? " : " + detail : "");
+    $("status").textContent = LABELS[state];
     updateSendButton();
   }
 
@@ -57,7 +58,7 @@
   }
 
   async function loadPhoto(file) {
-    showMessage("PROCESSING IMAGE...");
+    say("reading photo");
     try {
       photoBlob = await downscale(file);
     } catch (_) {
@@ -67,7 +68,7 @@
     preview.src = URL.createObjectURL(photoBlob);
     preview.hidden = false;
     $("preview-empty").hidden = true;
-    showMessage("IMAGE CAPTURED", "ok");
+    say("photo ok");
   }
 
   for (const id of ["camera-input", "library-input"]) {
@@ -83,7 +84,7 @@
     if (sending) return;
     if (document.activeElement) document.activeElement.blur();
     if (!photoBlob) {
-      showMessage("TAKE A PHOTO FIRST", "error");
+      say("no photo", true);
       return;
     }
 
@@ -91,17 +92,16 @@
     data.append("photo", photoBlob, "photo.jpg");
     sending = true;
     updateSendButton();
-    showMessage("TRANSMITTING...");
+    say("sending");
     try {
       const result = await post("/user/api/submit", data);
       if (result.ok) {
-        const loaded = result.data.state.state === "loaded";
-        showMessage(loaded ? "LOADED. WAITING FOR CUE." : "RECEIVED. PRINTING...", "ok");
+        say(result.data.state.state === "loaded" ? "sent. waiting on enter" : "sent. printing");
       } else {
-        showMessage(result.data.message || "ERROR " + result.status, "error");
+        say((result.data.message || "error " + result.status).toLowerCase(), true);
       }
     } catch (_) {
-      showMessage("NO CONNECTION TO PRINTER", "error");
+      say("no link", true);
     } finally {
       sending = false;
       updateSendButton();
@@ -112,9 +112,6 @@
     online(isOnline) {
       if (!isOnline) setStatus("offline");
     },
-    state: latestState((snapshot) => {
-      const card = snapshot.job && snapshot.job.card;
-      setStatus(snapshot.state, card ? card.last + ", " + card.first : "");
-    }),
+    state: latestState((snapshot) => setStatus(snapshot.state)),
   });
 })();

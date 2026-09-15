@@ -1,6 +1,94 @@
-/* Crew panel. */
+/* Crew panel. It's off camera, so it favors quick, legible controls over the in-world look. */
+
+:root {
+  --bg: #07040f;
+  --panel: #120a22;
+  --panel-edge: #2c1b4d;
+  --green: #39ff9c;
+  --green-dim: #1c8a57;
+  --amber: #ffb627;
+  --magenta: #ff2fd0;
+  --cyan: #2ee6ff;
+  --red: #ff4d5e;
+  --glow: 0 0 6px rgba(57, 255, 156, 0.55);
+}
+
+html, body { background: var(--bg); color: var(--green); font-family: var(--font-term); }
+
+.amber { color: var(--amber); }
+.dim { color: var(--green-dim); }
+
+[data-state="idle"] { --state-color: var(--green); }
+[data-state="loaded"] { --state-color: var(--amber); }
+[data-state="printing"] { --state-color: var(--cyan); }
+[data-state="done"] { --state-color: var(--magenta); }
+[data-state="offline"] { --state-color: var(--red); }
+
+.page {
+  max-width: 560px;
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 12px 16px calc(28px + env(safe-area-inset-bottom, 0px));
+}
+
+.titlebar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: linear-gradient(90deg, var(--magenta), var(--cyan));
+  color: var(--bg);
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+  padding: 8px 12px;
+  border: 2px solid var(--state-color, var(--green-dim));
+  color: var(--state-color, var(--green));
+  font-size: 24px;
+  text-shadow: 0 0 6px currentColor;
+}
+.status__dot { width: 12px; height: 12px; flex: none; background: currentColor; box-shadow: 0 0 8px currentColor; }
 
 .job-line { margin: 8px 2px 0; font-size: 20px; }
+
+.panel { margin-top: 14px; padding: 14px; background: var(--panel); border: 2px solid var(--panel-edge); }
+.panel__title {
+  margin: 0 0 12px;
+  color: var(--cyan);
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  font-weight: normal;
+  letter-spacing: 0.04em;
+}
+
+.field { display: grid; gap: 4px; margin-bottom: 12px; }
+.field > label,
+.field__label { color: var(--green-dim); font-size: 20px; }
+.field-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0 12px; }
+
+input[type="number"] {
+  width: 100%;
+  min-width: 0;
+  padding: 6px 10px;
+  border: 2px solid var(--green-dim);
+  border-radius: 0;
+  background: #000;
+  color: var(--green);
+  font: inherit;
+  font-size: 26px;
+  color-scheme: dark;
+}
+input:focus { outline: none; border-color: var(--green); box-shadow: var(--glow); }
+input[type="range"] { width: 100%; accent-color: var(--green); }
+input[type="checkbox"] { width: 24px; height: 24px; accent-color: var(--green); }
 
 .mode { display: grid; grid-template-columns: 1fr 1fr; border: 2px solid var(--green-dim); }
 .mode__option {
@@ -17,6 +105,36 @@
 
 .hint { margin: 8px 0 14px; font-size: 20px; line-height: 1.3; }
 
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 52px;
+  padding: 12px 16px;
+  border: 0;
+  border-radius: 0;
+  background: var(--green);
+  box-shadow: 4px 4px 0 var(--green-dim);
+  color: var(--bg);
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  line-height: 1.4;
+  text-transform: uppercase;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 var(--green-dim); }
+.btn:disabled { background: #2a2a33; box-shadow: 4px 4px 0 #15151b; color: #6b6b78; cursor: not-allowed; transform: none; }
+.btn--block { width: 100%; }
+.btn--cyan { background: var(--cyan); box-shadow: 4px 4px 0 #0e6f7d; }
+.btn--danger { background: var(--red); box-shadow: 4px 4px 0 #7a1f29; }
+.btn--panic { margin-top: 14px; background: transparent; box-shadow: inset 0 0 0 2px var(--red); color: var(--red); }
+.btn--panic:active { box-shadow: inset 0 0 0 2px var(--red); }
+.btn--panic[aria-pressed="true"] { background: var(--red); color: #fff; }
+
+.btn-row { display: grid; gap: 12px; }
 .controls { grid-template-columns: 1fr; }
 .controls .btn { min-height: 64px; }
 @media (min-width: 480px) {
@@ -25,3 +143,10 @@
 
 .check { display: flex; align-items: center; gap: 10px; margin: 6px 0; font-size: 22px; }
 .total { margin: 0; font-size: 22px; }
+
+.message { min-height: 1.3em; margin: 10px 0 0; font-size: 24px; }
+.message--error { color: var(--red); }
+.message--ok { color: var(--green); }
+
+.footer-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 20px; margin-top: 24px; font-size: 20px; }
+.footer-links a { color: var(--green-dim); }

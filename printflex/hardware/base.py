@@ -6,7 +6,7 @@ class Hardware:
 
     A future UNO Q implementation will call functions the Arduino sketch exposes with
     Bridge.provide() through arduino-router, and route physical button presses to
-    controller.start() / replay() / reset(). Hooks run while the controller holds its
+    controller.start() / replay() / reset() / toggle_panic(). Hooks run while the controller holds its
     lock, so they must return quickly and hand slow work to a thread.
     """
 

@@ -29,8 +29,9 @@ Running the venv's `python.exe` directly means you never need `Activate.ps1`, so
 - **Auto mode:** a photo prints as soon as it arrives.
 - **Cue mode:** the display shows DATA RECEIVED and waits for START.
 - **REPLAY** runs the last card again without resending it. **RESET** returns to idle immediately, even mid-print.
-- If a photo arrives while a card is printing or on screen, the phone shows PRINTER BUSY.
-- Keys on the display: **Space/Enter** START, **R** REPLAY, **Esc** RESET, **I** toggles the connection-info box.
+- **PANIC** covers the display with a dull parts-inventory spreadsheet. Printing keeps going underneath, so uncovering it shows wherever the print has reached. Toggle it from the crew panel or with the backquote key.
+- If a photo arrives while a card is printing or on screen, the phone shows "busy".
+- Keys on the display: **Space/Enter** START, **R** REPLAY, **Esc** RESET, **Backquote** (left of 1) PANIC, **I** toggles the connection-info box.
 
 Crew settings (mode, speed, phase durations, hold time, scanlines) are saved to `data/settings.json` and take effect on the next print.
 
@@ -45,13 +46,19 @@ Set these environment variables before starting (for example `$env:PRINTFLEX_POR
 | `PRINTFLEX_PUBLIC_HOST` | auto-detected LAN IP | Address shown to phones; set to `10.42.0.1` on the UNO Q hotspot |
 | `PRINTFLEX_DATA_DIR` | `./data` | Uploaded photos and `settings.json` |
 | `PRINTFLEX_SOFTWARE_NAME` | `PRINTFLEX` | In-world software name |
+| `PRINTFLEX_OPERATOR` | `user` | The character's handle, shown as `operator@printflex` on the display and phone |
 | `PRINTFLEX_STATE_NAME` / `PRINTFLEX_STATE_ABBR` | `NEW JERSEY` / `NJ` | State printed on the card |
 | `PRINTFLEX_WORLD_DATE` | today | `YYYY-MM-DD` date that card dates are based on, for period settings |
+
+## The look
+
+The display and phone page are the character's own tool, written for nobody else to see. They use a cool blue terminal look that never says what the program does, with small details like `log: off` and `tmp wiped`. The license card is the only polished thing on screen. The crew panel is off camera, so it keeps a louder, easier-to-read style.
 
 ## Where things live
 
 | To change | Edit |
 |---|---|
+| Panic screen contents | [printflex/templates/_decoy.html](printflex/templates/_decoy.html) |
 | Card layout and look | [printflex/templates/_card.html](printflex/templates/_card.html) and the "License card" section of [display.css](printflex/static/css/display.css) |
 | Animation steps and terminal text | [printflex/static/js/animation.js](printflex/static/js/animation.js) |
 | Random card data | [printflex/idgen.py](printflex/idgen.py) |

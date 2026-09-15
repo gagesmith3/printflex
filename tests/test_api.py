@@ -15,7 +15,7 @@ def submit(client, photo: bytes | None = None, **form):
 def test_pages_render(client, path):
     response = client.get(path)
     assert response.status_code == 200
-    assert b"PRINTFLEX" in response.data
+    assert b"printflex" in response.data.lower()
 
 
 def test_root_redirects_to_phone_page(client):
@@ -77,6 +77,7 @@ def test_cue_mode_start_reset_replay(client, jpeg):
     assert client.post("/server/api/control/start").get_json()["state"]["state"] == "printing"
     assert client.post("/server/api/control/reset").get_json()["state"]["state"] == "idle"
     assert client.post("/server/api/control/replay").get_json()["state"]["state"] == "loaded"
+    assert client.post("/server/api/control/panic").get_json()["state"]["panic"] is True
 
 
 def test_control_errors(client):

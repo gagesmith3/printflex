@@ -150,6 +150,24 @@ def test_protected_ids_include_last_job(rig):
     assert rig.controller.protected_job_ids() == {"job-1"}
 
 
+def test_panic_covers_without_interrupting_print(rig):
+    rig.controller.submit(JOB)
+    run = rig.controller.snapshot()["run"]
+
+    snapshot = rig.controller.toggle_panic()
+    assert (snapshot["panic"], snapshot["state"], snapshot["run"]) == (True, PRINTING, run)
+
+    rig.scheduler.advance(6)
+    assert rig.controller.state == DONE
+    assert rig.controller.toggle_panic()["panic"] is False
+
+
+def test_done_keeps_phase_plan(rig):
+    rig.controller.submit(JOB)
+    rig.scheduler.advance(6)
+    assert [p["name"] for p in rig.controller.snapshot()["phases"]] == ["receive", "compose", "print"]
+
+
 def test_hardware_failure_does_not_stop_printing(rig):
     def explode(phase, job):
         raise RuntimeError("motor jammed")
